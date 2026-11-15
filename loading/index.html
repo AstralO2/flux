@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Flux · Connecting</title>
+  <style>
+    :root{color-scheme:dark;font-family:Segoe UI,Arial,sans-serif;background:#0d1219;color:#edf4f5}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;padding:7vw;overflow:hidden}
+    body:before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at 85% 20%,#234d4a60,transparent 55%),linear-gradient(120deg,transparent 65%,#5dd3bb08 65%);pointer-events:none}
+    main{position:relative;width:100%;max-width:1360px;margin:auto;display:grid;grid-template-columns:1.35fr 1fr;gap:9vw;align-items:center}
+    .mark{font-weight:800;font-size:20px;letter-spacing:7px;color:#5dd3bb;margin-bottom:64px}
+    .eyebrow{text-transform:uppercase;letter-spacing:3px;color:#94a6b1;font-size:12px}
+    h1{font-size:clamp(40px,5vw,82px);line-height:1.06;letter-spacing:-3px;font-weight:600;margin:22px 0 28px;max-width:720px;overflow-wrap:anywhere}
+    .intro{font-size:20px;color:#94a6b1;line-height:1.6;max-width:460px}.accent{color:#5dd3bb}
+    aside{border:1px solid #34434f;border-radius:10px;padding:32px;background:#171f2999}
+    .row{display:flex;justify-content:space-between;gap:24px;margin-bottom:22px;font-size:14px}.value{color:#edf4f5;text-align:right;overflow-wrap:anywhere}.muted{color:#94a6b1}
+    .divider{height:1px;background:#34434f;margin:28px 0}.status{font-size:18px;margin:0 0 20px;min-height:44px;overflow-wrap:anywhere}
+    .track{height:5px;background:#34434f;border-radius:4px;overflow:hidden}.fill{height:100%;width:0;background:#5dd3bb;transition:width .3s ease}
+    .details{margin:16px 0 0;font-size:12px;min-height:36px;line-height:1.5;overflow-wrap:anywhere}.hint{margin-top:38px;color:#94a6b1;font-size:14px;line-height:1.7}
+    footer{position:fixed;bottom:30px;left:7vw;right:7vw;display:flex;justify-content:space-between;font-size:11px;letter-spacing:2px;color:#647984;text-transform:uppercase}
+    @media(max-width:760px){body{padding:40px 28px}main{grid-template-columns:1fr;gap:28px}.mark{margin-bottom:28px}h1{letter-spacing:-1px}.intro{font-size:16px}aside{padding:24px}footer{display:none}}
+    @media(prefers-reduced-motion:reduce){.fill{transition:none}}
+  </style>
+</head>
+<body>
+  <main>
+    <section>
+      <div class="mark">FLUX<span class="accent">/</span></div>
+      <div class="eyebrow">A new story starts here</div>
+      <h1 id="server">Make yourself<br>part of the story.</h1>
+      <p class="intro">New faces. Familiar places.<br>Your next chapter is waiting.</p>
+    </section>
+    <aside aria-label="Connection progress">
+      <div class="row"><span class="muted">DESTINATION</span><span class="value" id="map">Preparing connection</span></div>
+      <div class="row"><span class="muted">GAMEMODE</span><span class="value">Flux</span></div>
+      <div class="divider"></div>
+      <p class="status" id="status" role="status" aria-live="polite">Connecting to the server…</p>
+      <div class="track" role="progressbar" id="progress" aria-label="Asset downloads" aria-valuemin="0" aria-valuemax="100"><div class="fill" id="fill"></div></div>
+      <p class="details muted" id="files">Waiting for download information.</p>
+      <p class="hint">Create a character, find your place and take it from there.</p>
+    </aside>
+  </main>
+  <footer><span>Flux roleplay framework</span><span>Characters · Community · Possibility</span></footer>
+  <script>
+    'use strict';
+    var totalFiles = 0;
+    var remainingFiles = null;
+    var downloaded = 0;
+    function setText(id, value) { document.getElementById(id).textContent = String(value); }
+    function refreshProgress() {
+      if (totalFiles <= 0 || remainingFiles === null) return;
+      downloaded = Math.max(downloaded, Math.max(0, totalFiles - remainingFiles));
+      var percent = Math.min(100, Math.floor(downloaded / totalFiles * 100));
+      document.getElementById('fill').style.width = percent + '%';
+      document.getElementById('progress').setAttribute('aria-valuenow', String(percent));
+      setText('files', Math.min(downloaded, totalFiles) + ' / ' + totalFiles + ' assets downloaded');
+    }
+    function GameDetails(servername, serverurl, mapname) {
+      setText('server', servername || 'Welcome to Flux.');
+      setText('map', mapname || 'Preparing connection');
+    }
+    function SetFilesTotal(value) {
+      var parsed = Number(value);
+      if (!Number.isFinite(parsed) || parsed < 0) return;
+      totalFiles = Math.floor(parsed);
+      refreshProgress();
+    }
+    function SetFilesNeeded(value) {
+      var parsed = Number(value);
+      if (!Number.isFinite(parsed) || parsed < 0) return;
+      remainingFiles = Math.floor(parsed);
+      refreshProgress();
+    }
+    function DownloadingFile(filename) { setText('status', 'Downloading assets'); setText('files', filename); }
+    function SetStatusChanged(status) { setText('status', status); }
+  </script>
+</body>
+</html>

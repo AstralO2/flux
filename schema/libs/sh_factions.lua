@@ -1,0 +1,2 @@
+-- Kept for in-place upgrades. Factions/constants are now authored in
+-- schema/factions; no DarkRP jobs are imported by this library.

@@ -1,0 +1,7 @@
+"flux"
+{
+    "base"      "sandbox"
+    "title"     "Flux"
+    "author"    "Flux contributors"
+    "menusystem" "1"
+}
